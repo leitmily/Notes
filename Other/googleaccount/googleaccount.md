@@ -22,7 +22,7 @@
 
 1. 打开 **网易邮箱大师**，随便输入个gmail的邮箱，然后点下一步。
 
-    ![1](./pictures/1.PNG)
+    <img src="./pictures/1.PNG" height="400" align=center/>
 
 2. 点击创建账号，并填写个人信息以及邮箱名等信息，并点击下一步
    
