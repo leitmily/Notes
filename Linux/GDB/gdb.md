@@ -32,7 +32,7 @@ title: GDB 基本用法，以及多进程、多线程的调试
     - [1. 使用调试器选项 follow-fork-mode 和 detach-on-fork](#1-使用调试器选项-follow-fork-mode-和-detach-on-fork)
     - [2. 使用 attach 命令](#2-使用-attach-命令)
 - [五、多线程调试](#五多线程调试)
-- [参考资料：](#参考资料)
+- [参考资料](#参考资料)
 
 <!-- /TOC -->
 
@@ -744,7 +744,7 @@ gdb 支持的命里有两种类型：前台的（同步的）和后台（异步 
 
     查看当前锁定线程的模式。
 
-# 参考资料：
+# 参考资料
 
 * [GDB 基本命令(整合)](https://blog.csdn.net/water_cow/article/details/7214054 "GDB基本命令(整合)")
 * [GDB 常用调试命令以及多进程多线程调试](https://blog.csdn.net/freeelinux/article/details/53700266 "GDB常用调试命令以及多进程多线程调试")
