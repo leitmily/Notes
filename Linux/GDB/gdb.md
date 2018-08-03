@@ -1,15 +1,42 @@
-# GDB 基本用法，以及多进程、多线程的调试
+---
+title: GDB 基本用法，以及多进程、多线程的调试
+---
 
 该内容主要是把几个参考的博客内容进行整理和补充，并采用markdown语法对原博客内容重写
 
-参考资料：
+<!-- TOC -->
 
-* [GDB 基本命令(整合)](https://blog.csdn.net/water_cow/article/details/7214054 "GDB基本命令(整合)")
-* [GDB 常用调试命令以及多进程多线程调试](https://blog.csdn.net/freeelinux/article/details/53700266 "GDB常用调试命令以及多进程多线程调试")
-* [使用 GDB 调试多进程程序](https://www.ibm.com/developerworks/cn/linux/l-cn-gdbmp/ "使用 GDB 调试多进程程序")
-* [gdb调试多进程与多线程](https://blog.csdn.net/snow_5288/article/details/72982594 "gdb调试多进程与多线程")
+- [一、GDB 调试基本知识](#一gdb-调试基本知识)
+- [二、GDB 基本命令清单查询](#二gdb-基本命令清单查询)
+- [三、GDB 基本命令用法](#三gdb-基本命令用法)
+    - [1. 运行和退出](#1-运行和退出)
+    - [2. 查看信息](#2-查看信息)
+    - [3. 暂停执行](#3-暂停执行)
+        - [设置断点](#设置断点)
+        - [断点的管理](#断点的管理)
+        - [为断点设置命令列表](#为断点设置命令列表)
+        - [监视点](#监视点)
+        - [捕捉点](#捕捉点)
+    - [4. 恢复执行](#4-恢复执行)
+    - [5. 变量赋值](#5-变量赋值)
+    - [6. 函数调用](#6-函数调用)
+    - [7. 栈信息](#7-栈信息)
+    - [8. 信号](#8-信号)
+    - [9. 字段搜索](#9-字段搜索)
+    - [10. UNIX接口](#10-unix接口)
+    - [11. 工作目录](#11-工作目录)
+    - [12. 机器语言工具](#12-机器语言工具)
+    - [13. 命令的历史](#13-命令的历史)
+    - [14. 查看机器码](#14-查看机器码)
+- [四、多进程调试](#四多进程调试)
+    - [1. 使用调试器选项 follow-fork-mode 和 detach-on-fork](#1-使用调试器选项-follow-fork-mode-和-detach-on-fork)
+    - [2. 使用 attach 命令](#2-使用-attach-命令)
+- [五、多线程调试](#五多线程调试)
+- [参考资料：](#参考资料)
 
-## 一、GDB 调试基本知识
+<!-- /TOC -->
+
+# 一、GDB 调试基本知识
 
 1. 调试器指示的是将要执行的代码行
 2. 只有在编译时拥有调试符号(-g)的程序才能在调试时看到源码
@@ -18,7 +45,7 @@
 5. 在任何给定时间，gdb只有一个焦点，即当前“活动”的文件
 6. 源文件改变后，断点发生移动，带式断点属性的行号不变
 
-## 二、GDB 基本命令清单查询
+# 二、GDB 基本命令清单查询
 
 在 gdb 提示符处键入help，将列出命令的分类，主要的分类有： 
 
@@ -34,9 +61,9 @@
 
 键入 help 后跟命令的分类名（如help aliases），可获得该类命令的详细清单。
 
-## 三、GDB 基本命令用法
+# 三、GDB 基本命令用法
 
-### 1. 运行和退出
+## 1. 运行和退出
 
 * **run（简写r）：执行程序**
     ```shell
@@ -62,7 +89,7 @@
     (gdb) quit
     ```
 
-### 2. 查看信息
+## 2. 查看信息
 
 * **list（简写l）：查看源码**
 
@@ -205,9 +232,9 @@
     >>> w： 四字节  
     >>> g： 八字节
 
-### 3. 暂停执行
+## 3. 暂停执行
 
-#### 设置断点
+### 设置断点
 
 * break（简写b）：在调试的程序中设置断点
 
@@ -254,7 +281,7 @@
     将在断点3上附加条件(i==3)  
     tbreak（简写tb）：临时断点，中断一次后自动删除断点，形式参照break
 
-#### 断点的管理
+### 断点的管理
 
 * 显示当前gdb的断点信息info(简写i)：
     ```shell
@@ -325,26 +352,27 @@
 
     gdb中移动断点的唯一方法是删除断点后在新的位置再放置一个一模一样的断点，但ddd中只需要拖曳断点符号就可以移动新的断点，并且保留该断点的所有属性。
 
-#### 为断点设置命令列表
+### 为断点设置命令列表
 
-* 通常，设置一个断点并且在上面中断后，一般会查询一些变量或做一些其他动作。使用命令列表(commands)就能使程序到达断点后自动执行这些动作。
+通常，设置一个断点并且在上面中断后，一般会查询一些变量或做一些其他动作。使用命令列表(commands)就能使程序到达断点后自动执行这些动作。
 
-    步骤如下：
-    1. 建立断点
-    2. 使用commands命令，用法(gdb)command break_list，如：
-        ```shell
-        (gdb) commands 1
+步骤如下：
 
-        Type commands for when breakpoint 1 is hit, one per line.
-        End with a line saying just "end".
+1. 建立断点
+2. 使用commands命令，用法(gdb)command break_list，如：
+    ```shell
+    (gdb) commands 1
 
-        >silent
-        >printf "n = %d\n", n
-        >continue
-        >end
-        ```
+    Type commands for when breakpoint 1 is hit, one per line.
+    End with a line saying just "end".
 
-#### 监视点
+    >silent
+    >printf "n = %d\n", n
+    >continue
+    >end
+    ```
+
+### 监视点
 
 * display: 监视某个变量，并且每次都停下都显示该变量值
     ```shell
@@ -372,7 +400,7 @@
     >>> Will ignore next 15 crossings of breakpoint 3.
     ```
 
-#### 捕捉点
+### 捕捉点
 
 * catch event：当event发生时，停止执行程序
     event可为以下情况：
@@ -384,7 +412,7 @@
     > load 或 load 载入共享库（动态链接库）时（load为关键字，目前此功能只在HP-UX下有用）  
     > unload 或 unload 卸载共享库（动态链接库）时（unload为关键字，目前此功能只在HP-UX下有用）
 
-### 4. 恢复执行
+## 4. 恢复执行
 
 * next（简写n）：不进入的单步执行，且执行n步
     ```shell
@@ -415,7 +443,7 @@
     ```
     以上两种用法在到达指定的行号或者函数后即停止。
 
-### 5. 变量赋值
+## 5. 变量赋值
 
 除了使用 print 给变量赋值，还可以使用 set variable 命令赋值。
 
@@ -428,7 +456,7 @@
     (gdb) set env USER=benben
     ```
 
-### 6. 函数调用
+## 6. 函数调用
 
 * call func_name：调用和执行一个函数
     ```shell
@@ -447,7 +475,7 @@
     (gdb) jump address  # 跳到代码行的地址
     ```
 
-### 7. 栈信息
+## 7. 栈信息
 
 * backtrace（简写bt）：为堆栈提供向后跟踪功能
     ```shell
@@ -463,7 +491,7 @@
     (gdb) up    # 上移栈帧，使另一函数成为当前函数
     ```
 
-### 8. 信号
+## 8. 信号
 
 * handle signals [argu]：捕捉信号
 
@@ -492,13 +520,13 @@
     ```
     该程序继续执行，但是立即传输该信号，而且处理程序开始运行。
 
-### 9. 字段搜索
+## 9. 字段搜索
 
 * search text：至上往下搜索，显示在当前文件中包含text的代码行
 
 * reverse-search text：至下往上搜索，显示包含text的代码行
 
-### 10. UNIX接口
+## 10. UNIX接口
 
 * shell：使可不用离开gdb下启动unix外壳，即暂时退出gdb调试回到用户控制终端
     ```sehll
@@ -509,7 +537,7 @@
     exit
     ```
 
-### 11. 工作目录
+## 11. 工作目录
 
 * cd：改变工作目录
     ```shell
@@ -520,7 +548,7 @@
     (gdb) pwd
     ```
 
-### 12. 机器语言工具
+## 12. 机器语言工具
 
 有一组专用的gdb变量可以用来检查和修改计算机的通用寄存器，gdb提供了目前每一台计算机中实际使用的4个寄存器的标准名字：
 
@@ -529,7 +557,7 @@
 * $sp ： 栈指针
 * $ps ： 处理器状态
 
-### 13. 命令的历史
+## 13. 命令的历史
 
 为了允许使用历史命令，可使用 set history expansion on 命令
 
@@ -537,7 +565,7 @@
 (gdb) set history expansion on
 ```
 
-### 14. 查看机器码
+## 14. 查看机器码
 
 * disassemble： 查看执行时源代码的机器码
 
@@ -556,11 +584,11 @@
     ...
     ```
 
-## 四、多进程调试
+# 四、多进程调试
 
 在进行多进程调试的时候，我们在 fork() 函数后的父进程与子进程代码段内分别设有断点并运行调试的时候会发现，父进程能够在断点处正常停止，而子进程会忽略断点继续运行，因此需要一定的手段调试多进程程序。
 
-### 1. 使用调试器选项 follow-fork-mode 和 detach-on-fork
+## 1. 使用调试器选项 follow-fork-mode 和 detach-on-fork
 
 * follow-fork-mode 选项
 
@@ -605,7 +633,7 @@
     ```
     `注`：该方法并不适合所有 Linux， 因此需要采用其他方法。
 
-### 2. 使用 attach 命令
+## 2. 使用 attach 命令
 
 众所周知，GDB 有附着（attach）到正在运行的进程的功能，即 attach \< pid \> 命令。因此我们可以利用该命令 attach 到子进程然后进行调试。
 
@@ -643,7 +671,7 @@ while(true) {
 ... // 其他代码，使用 jump 跳转至此
 ```
 
-## 五、多线程调试
+# 五、多线程调试
 
 gdb调试一般有两种模式：all-stop模式和no-stop模式（gdb7.0之前不支持no-stop模式）。
 
@@ -666,7 +694,7 @@ gdb调试一般有两种模式：all-stop模式和no-stop模式（gdb7.0之前�
 (gdb) set non-stop on
 ```
 
-gdb 支持的命里有两种类型：前台的（同步的）和后台（异步 ）的。区别很简单，同步的在输出提示符之前会等待程序 report 一些线程已经终止的信息，异步则是直接返回。所以我们需要set target-async 1。set pagination off 可以不让线程结束的时候出现 Type \<return\> to continue 的提示信息 。最后一步是打开。
+gdb 支持的命里有两种类型：前台的（同步的）和后台（异步 ）的。区别很简单，同步的在输出提示符之前会等待程序 report 一些线程已经终止的信息，异步则是直接返回。所以我们需要 set target-async 1。set pagination off 可以不让线程结束的时候出现 Type < return > to continue 的提示信息 。最后一步是打开。
 
 下面是常用命令：
 
@@ -715,3 +743,10 @@ gdb 支持的命里有两种类型：前台的（同步的）和后台（异步 
 * show scheduler-locking
 
     查看当前锁定线程的模式。
+
+# 参考资料：
+
+* [GDB 基本命令(整合)](https://blog.csdn.net/water_cow/article/details/7214054 "GDB基本命令(整合)")
+* [GDB 常用调试命令以及多进程多线程调试](https://blog.csdn.net/freeelinux/article/details/53700266 "GDB常用调试命令以及多进程多线程调试")
+* [使用 GDB 调试多进程程序](https://www.ibm.com/developerworks/cn/linux/l-cn-gdbmp/ "使用 GDB 调试多进程程序")
+* [gdb调试多进程与多线程](https://blog.csdn.net/snow_5288/article/details/72982594 "gdb调试多进程与多线程")
