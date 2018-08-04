@@ -9,3 +9,6 @@
 
 * Other
     > [解决注册谷歌账号时出现的错误：此电话号码无法用于进行验证](https://github.com/leitmily/Notes/blob/master/Other/googleaccount/googleaccount.md "解决注册谷歌账号时出现的错误：此电话号码无法用于进行验证")
+
+* algorithm
+    > [KMP 算法详解（CPP 实现）](https://github.com/leitmily/Notes/tree/master/algorithm/KMP "KMP 算法详解（CPP 实现）")
