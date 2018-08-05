@@ -48,9 +48,9 @@ title: KMP 算法详解（CPP 实现）
 
 &emsp;&emsp;如果两个位置的字符不相同，我们可以将长度为 next[ i-1 ] 的字符串继续分割，获得其最大公共长度 next[ next[ i-1 ] -1 ]，然后再和位置 i 的字符比较。由于长度为 next[ i-1 ] 的字符串的公共长度保存在索引为 next[ i-1 ] -1 的 next 数组中，而该字符串又包含相同的前缀和后缀，如下图所示，如果位置 next[ next[ i-1 ] -1 ]和位置 i 的字符相同，则 next [i ]就等于 next[ next[ i -1 ] -1 ] + 1。如果不相等，就可以继续分割长度为 next[ next[ i -1 ] -1 ] 的字符串，直到字符串长度为 0 为止。
 
-&emsp;&emsp;根据上述计算 next 数组的过程，可以写出相应的求 next 数组的代码（CPP实现）：
-
 <div align="center"><img src="./pictures/4.png" width="700"/></div>
+
+&emsp;&emsp;根据上述计算 next 数组的过程，可以写出相应的求 next 数组的代码（CPP实现）：
 
 ```cpp
 vector<int> getNext(const char *str)
